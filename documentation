@@ -21,8 +21,8 @@ Purpose:
 Description:
     A Bank alike Software.. Which infact is capable of transferring, receiving, depositing and withdrawing funds. To add-on with.. 
     This beauty got the ability to mail users about fund-transactions transpiring via the user's account. That isn't all... 
-    Super-User access is the killer-bite of the whole segment, which basically approves an admin validated user to access crude data and display 
-    confidential info's of an user as per the super-user's wish.
+    Super-User access is the killer-bite of the whole segment, which basically approves an admin validated user to access crude data and 
+    display confidential info's of an user as per the super-user's wish.
 
 Medium of transactions:
     -> '$' a.k.a USD [United States Dollar]
@@ -35,6 +35,7 @@ Libraries and modules used:
     smtplib -> used to handle email via python [pre-installed] [fullform: simple-mail-transfer-protocol-library].
     random -> to generate unique id [pre-installed].
     email -> to make the email server linkage primitive [pre-installed].
+    yagmail -> to send email with attachments
 
 
 Set of Mysql commands to be executed before running the program:
@@ -66,28 +67,36 @@ Set of Mysql commands to be executed before running the program:
         rec_user_id char(10));
        
 
+Connecting Gmail with python:
+    -> Turn on google
+    -> Go To Security of your account
+    -> Then turn less secure apps on
+    -> Atlast make necessary modifications to the email_bot file
+    -> Then you are gr8 to go.
+
+
 Files:
     ->main.py:
-        The grand-dad of all files.. this is the peculiar and ultimate destination where the files existing would colloborate 
-        togther to make the whole system of process work like charm.
+        The grand-dad of all files.. this is the peculiar and ultimate destination where the files existing would colloborate togther 
+	    to make the whole system of process work like charm.
 
     ->crude_fun.py:
         A typical module portraying file.. Got all the fundamental functions to pretty the output and intimate user about what's going on.
 
     ->database.py:
-        Horizon where most of the data-related functions reside.. Its a typical module-portraying file.. way similiar to the prior. 
-        It consists of stuffs related to transactions i.e: bunchies like withdrawal, deposital and thingys that sort, come under this genre.
+        Horizon where most of the data-related functions reside.. Its a typical module-portraying file.. 
+	    way similiar to the prior. It consists of stuffs related to transactions i.e: bunchies like withdrawal, deposital and thingys that sort, come under this genre.
 
     ->email_bot.py:
-        Gotta employ somebody to dust off chores.. And that's where email_bot comes under action. This kuddo send's email to the users by 
-        establishing smtp server in the most efficient way out there. Might consume some time. But worth the span.
+        Gotta employ somebody to dust off chores.. And that's where email_bot comes under action. This kuddo send's email to the users by establishing 
+	    smtp server in the most efficient way out there. Might consume some time. But worth the span.
 
     ->super_user.py:
         The ultimate bucket list which comprises a mapping eventually making that mapping store super-user name and their passkey to get the super-user access.
 
     ->unique_code_gen.py:
-        Generating stuffs are pretty simple.. But human effort kills worthy span. unique_code_gen makes it sweet by manufacturing an unique id for a user which
-        inturn is contrasted with the id's available from the database. Atlast if stuffs work right an unique id is generated.
+        Generating stuffs are pretty simple.. But human effort kills worthy span. unique_code_gen makes it sweet by manufacturing an unique id for a user 
+	    which inturn is contrasted with the id's available from the database. Atlast if stuffs work right an unique id is generated.
 
 
 functions created:
@@ -109,12 +118,14 @@ functions created:
     
     ->email_bot.py:
         -> post_email: to mail users about the transactions thay make.
+        ->https://www.youtube.com/watch?v=d07QQVQ8M9g -> using yagmail module to send email with attachments
     
     ->unique_code_gen:
         -> unique_code_gen: to generate unique user id for new users.
     
     ->super_user.py:
         -> super_user: a map containing a bucket list of super users username and passkey to let them log-in.
+
 
 
 Contact Us @:
@@ -131,5 +142,5 @@ Contact Us @:
     
     -> M.Adethya:
         -> Ph.no    : 63807 57829
-        -> Email    : surya090404@gmail.com
+        -> Email    : adethyam@gmail.com
         -> GitHub   : Ade-Mur
