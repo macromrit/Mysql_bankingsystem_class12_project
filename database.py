@@ -10,6 +10,7 @@ from crude_fun import func_sep, ref_all, void_sep
 import datetime
 from crude_fun import cust_inp
 from super_user import super_users
+import csv
 #------------------------------------------------------------->
 try:
     main_connection = mq.connect(host='localhost',
@@ -32,7 +33,8 @@ if connected:
                     email: str,
                     date_created: str,
                     balance: float,
-                    password: str
+                    password: str,
+                    pincode: str
                     )->bool:
         
         create_cursor = main_connection.cursor()
@@ -40,8 +42,8 @@ if connected:
         
         try:
             create_cursor.execute(
-'''INSERT INTO account_holders VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',
-(name, gender, age, nationality, unique_id, phone_no, email, date_created, balance, password)
+'''INSERT INTO account_holders VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',
+(name, gender, age, nationality, unique_id, phone_no, email, date_created, balance, password, pincode)
         )
             main_connection.commit()
             created=True
@@ -60,7 +62,7 @@ if connected:
                           password: str)->bool and str:
         check_cursor = main_connection.cursor()
         try:
-            check_cursor.execute(F"SELECT name, unique_id, password, email FROM account_holders where name like '{name}'")
+            check_cursor.execute(F"SELECT name, unique_id, password, email, pincode FROM account_holders where name like '{name}'")
             info = [x for x in check_cursor.fetchall()]
         except:
             print('issue2: data renderance error')
@@ -73,8 +75,8 @@ if connected:
         
         else: pass
         
-        if authenticated: return (authenticated, name, user_id, info[0][3])
-        else: return authenticated, None, None, None
+        if authenticated: return (authenticated, name, user_id, info[0][3], info[0][4])
+        else: return authenticated, None, None, None, None
         
 #delete       
 #-------------------------------------------------------------------------------------------------------->    
@@ -91,7 +93,26 @@ if connected:
         delete_cursor.close()
 
         return deleted
-    
+
+#update pin
+#-------------------------------------------------------------------------------------------------------->    
+    def update_pin(user_id: str,
+                new_pin: str)->bool:
+        update_pin_cursor = main_connection.cursor()
+        updated = False
+        try:
+            update_pin_cursor.execute('UPDATE account_holders set pincode=%s where unique_id=%s',
+                                    (new_pin, user_id))
+            main_connection.commit()
+            updated = True
+        except:
+            main_connection.rollback()
+            print('Error')
+        update_pin_cursor.close()
+        
+        return updated
+
+
 #withdrawal
 #-------------------------------------------------------------------------------------------------------->    
     def withdraw_funds(user_name: str,
@@ -195,11 +216,11 @@ if connected:
                 print('Connectivity Error')
                 main_connection.rollback()
             
-            if transferred: return transferred, ref_all('t', user_name, user_id, amount, recievers_name, recievers_id, amount, str(datetime.datetime.now()))
-            else: return transferred, None
+            if transferred: return transferred, ref_all('t', user_name, user_id, amount, recievers_name, recievers_id, amount, str(datetime.datetime.now())), upd_senders_balance, upd_recievers_balance
+            else: return transferred, None, None, None
         
         else: 
-            return transferred, None
+            return transferred, None, None, None
         
 #balance enquiry    
 #-------------------------------------------------------------------------------------------------------->
@@ -214,6 +235,24 @@ if connected:
         
         return True, ref_all('b', vals[0][0], vals[0][1], vals[0][2], vals[0][3])
     
+#transaction history   
+#-------------------------------------------------------------------------------------------------------->
+
+    def csv_transactions(filename: str,
+                         user_id: str)->bool:
+        process = False
+        try:
+            history_cursor = main_connection.cursor()
+            history_cursor.execute('SELECT * FROM history WHERE user_id = %s', (user_id,))
+            with open(F'user_transactions/{filename}.csv', 'w', newline='') as writting: 
+                actual = csv.writer(writting, delimiter=',')
+                actual.writerow(['your-id', 'mode-of-transaction', 'amount', 'receivers-id', 'transaction-time'])
+                for i in history_cursor: actual.writerow(list(i))
+            history_cursor.close()
+            process=True
+        except: pass
+        return process
+
     
 #super user
 #-------------------------------------------------------------------------------------------------------->    
@@ -285,8 +324,9 @@ Unique Id    :{vals[0][4]}
 Phone Number :{vals[0][5]}
 E-mail       :{vals[0][6]} 
 Date Created :{vals[0][7]}
-Balance      :{vals[0][8]}
+Balance      :${vals[0][8]}
 Password     :{vals[0][9]}
+Pin-Code     :{vals[0][10]}
 --------------------------------
 
                             """)
