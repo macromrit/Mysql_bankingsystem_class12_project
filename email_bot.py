@@ -1,6 +1,9 @@
 import smtplib #->simple mail transfer protocol lib
 from email.message import EmailMessage
 
+from matplotlib.pyplot import title
+import yagmail
+
 def post_email(reciever: str, 
                subject: str,
                content: str):
@@ -8,7 +11,7 @@ def post_email(reciever: str,
     try:
         history = EmailMessage()
         history['Subject'] = subject
-        history['From'] = 'Dopethon Financers'
+        history['From'] = 'Dopethon Finances'
         history['To'] = reciever
         history.set_content(content)
         
@@ -22,3 +25,20 @@ def post_email(reciever: str,
     except:
         pass
     return email_sent
+
+def acc_post_email(reciever_email: str, 
+                   usdid: str): 
+    right_from = 'amritsubramanian.c@gmail.com'
+    act_receiver = reciever_email
+    titly = 'Dopethon Finances - Your Transactional History with our bank'
+    filename = F'user_transactions/{usdid}.csv'
+    
+    mrit = yagmail.SMTP(right_from, 'amma@@1953')
+    mrit.send(
+        to=act_receiver,
+        subject=titly,
+        contents='Your transactional history upto now has been written to the csv file pinged down:',
+        attachments=filename
+    )
+
+if __name__ == '__main__': pass
