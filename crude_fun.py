@@ -17,8 +17,7 @@ def cust_inp(content: str='',
                 main_val = str(input(content)).strip()
                 #####
                 break
-            except:
-                print('Oops :( something went wrong.. Try again!!')
+            except: print('Oops :( something went wrong.. Try again!!')
     
     elif d_type=='f':#its a float
         while True:
@@ -26,8 +25,7 @@ def cust_inp(content: str='',
                 main_val = float(input(content))
                 #####
                 break
-            except:
-                print('Oops :( something went wrong.. Try again!!')
+            except: print('Oops :( something went wrong.. Try again!!')
                 
     elif d_type=='i':
         while True:
@@ -35,11 +33,9 @@ def cust_inp(content: str='',
                 main_val = int(input(content))
                 #####
                 break
-            except:
-                print('Oops :( something went wrong.. Try again!!')
+            except: print('Oops :( something went wrong.. Try again!!')
     
-    else: 
-        main_val = -1
+    else: main_val = -1
     
     return main_val
               
@@ -62,11 +58,11 @@ def ref_all(mode: str='w',
 -------------------------------------        
 Withdawal Reciept        
 -------------------------------------        
-User's Name:        {vals[0]}        
-User's bank id:     {vals[1]}        
-Amount withdrawn:   ${vals[2]}        
-Withdrawed Time:    {vals[4]}  
-User's balance:     ${vals[3]}        
+User's Name:        {vals[0]}
+User's bank id:     {vals[1]}
+Amount withdrawn:   ${vals[2]}
+Withdrawed Time:    {vals[4]}
+User's balance:     ${vals[3]}
 -------------------------------------
         '''
     elif mode=='d':#if the mode is to deposit funds
@@ -74,11 +70,11 @@ User's balance:     ${vals[3]}
 -------------------------------------        
 Deposital Reciept        
 -------------------------------------        
-User's Name:        {vals[0]}        
-User's bank id:     {vals[1]}        
-Amount deposited:   ${vals[2]}      
-Deposited Time:     {vals[4]}  
-User's balance:     ${vals[3]}        
+User's Name:        {vals[0]}
+User's bank id:     {vals[1]}
+Amount deposited:   ${vals[2]}
+Deposited Time:     {vals[4]}
+User's balance:     ${vals[3]}
 -------------------------------------
         '''
         
@@ -87,15 +83,15 @@ User's balance:     ${vals[3]}
 --------------------------------------
 Tranfer Reciept         
 --------------------------------------        
-Sender's Name:      {vals[0]}        
-Sender's bank id:   {vals[1]}        
-Amount transferred: ${vals[2]}                
+Sender's Name:      {vals[0]}
+Sender's bank id:   {vals[1]}
+Amount transferred: ${vals[2]}
 <><><><><><><><><><><><><><><><><><><>
-Transferred Time:   {vals[6]}  
+Transferred Time:   {vals[6]}
 <><><><><><><><><><><><><><><><><><><>
-reciever's Name:    {vals[3]}        
-reciever's bank id: {vals[4]}        
-Amount recieved:    ${vals[5]}        
+reciever's Name:    {vals[3]}
+reciever's bank id: {vals[4]}
+Amount recieved:    ${vals[5]}
 --------------------------------------
         '''
     
@@ -104,8 +100,8 @@ Amount recieved:    ${vals[5]}
 -------------------------------------        
 Account details
 -------------------------------------
-User's Name:            {vals[0]}        
-User's bank id:         {vals[1]}        
+User's Name:            {vals[0]}
+User's bank id:         {vals[1]}
 User's balance:         ${vals[2]}
 Account was created on: {vals[3]}
 -------------------------------------
