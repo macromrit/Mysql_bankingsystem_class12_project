@@ -3,7 +3,7 @@ from database import *
 from crude_fun import cust_inp, func_sep, void_sep
 from unique_code_gen import unique_code_gen
 import datetime
-from email_bot import post_email
+from email_bot import acc_post_email, post_email
 import time
 
 ###########################################
@@ -27,18 +27,20 @@ welcome to home:enter ->
 ------------------------
 """
 
-procedural_menu = """
----------------------------------------
-hey.. this is your dashboard..enter->
----------------------------------------
-1 -> To withdraw funds
-2 -> To deposit funds
-3 -> To Transfer funds
-4 -> To Logout
-5 -> To Delete Account
-6 -> To Display Account Balance and info
----------------------------------------
-"""
+# procedural_menu = """
+# ---------------------------------------
+# hey.. this is your dashboard..enter->
+# ---------------------------------------
+# 1 -> To withdraw funds
+# 2 -> To deposit funds
+# 3 -> To Transfer funds
+# 4 -> To Logout
+# 5 -> To Delete Account
+# 6 -> To Display Account Balance and info
+# 7 -> To Reset Your 4-digit Pin
+# 8 -> To send an email of your bank transactional history in a csv format
+# ---------------------------------------
+# """
 
 while True:
     print(menu)
@@ -51,51 +53,78 @@ while True:
             name = cust_inp('Enter username: ', 's')
             user_id = cust_inp('Enter bank id: ', 's')
             password = cust_inp('Enter password: ', 's')
-            authenticated, real_name, real_id, real_email = authenticate_user(name, user_id, password)
+            authenticated, real_name, real_id, real_email, pincode = authenticate_user(name, user_id, password)
             if authenticated:
-                print('Logged-In Successfully')
+                print(F'''
+{'-'*50}
+Logged-In as {real_name}
+{'-'*50}''')
+                procedural_menu = F"""
+---------------------------------------
+hey {real_name}.. this is your dashboard-->>
+---------------------------------------
+1 -> To withdraw funds
+2 -> To deposit funds
+3 -> To Transfer funds
+4 -> To Logout
+5 -> To Delete Account
+6 -> To Display Account Balance and info
+7 -> To Reset Your 4-digit Pin
+8 -> To send an email of your bank transactional history in a csv format
+---------------------------------------
+                            """
                 time.sleep(1)
                 void_sep()
                 while True:
                     print(procedural_menu)
                     preference = cust_inp('(what do ya wanna do)-> ', 's')
                     void_sep(1)
-                    if preference in list('123456'):
+                    if preference in list('12345678'):
 
-#withdrawal--------------------------------------------------------------------------------------------------->                        
+#withdrawal--------------------------------------------------------------------------------------------------->                      
                         if preference == '1':#withdrawal
-                            amount = cust_inp('Enter the amount to be withdrawn: ', 'f')
-                            processing = withdraw_funds(real_name, real_id, amount)
-                            
-                            if processing[0]:
-                                print('Withdrawal successful')  
-                                print(processing[1])
-                                post_email(real_email, 'Withdrawed Funds Successfully', processing[1])
-                                time.sleep(0.5)
+                            print('Withdraw Funds:')
+                            pincodeauth = cust_inp('Enter your 4 digit pincode: ', 's')
+                            if pincodeauth==pincode:
+                                amount = cust_inp('Enter the amount to be withdrawn: ', 'f')
+                                processing = withdraw_funds(real_name, real_id, amount)
                                 
-                            else:
-                                void_sep()
-                                print("Ooopss.... Something went wrong..might be that you account had insufficient balance.. or exceeded the withdrawal limit -> 60grand")   
-                            
+                                if processing[0]:
+                                    print('Withdrawal successful')  
+                                    print(processing[1])
+                                    post_email(real_email, 'Withdrawed Funds Successfully', processing[1])
+                                    time.sleep(0.5)
+                                    
+                                else:
+                                    void_sep()
+                                    print("Ooopss.... Something went wrong..might be that you account had insufficient balance.. or exceeded the withdrawal limit -> 60grand")   
+                                
+                            else: print('Pincode didn\'t match.. Try again later!!')
                             func_sep()
                                                          
 #deposital--------------------------------------------------------------------------------------------------->                        
                         elif preference == '2':#deposit
-                            amount = cust_inp('Enter the amount to be deposited: ', 'f')
-                            processing = deposit_funds(real_name, real_id, amount)
-                            
-                            if processing[0]:
-                                print('deposited successfully')  
-                                print(processing[1])
-                                post_email(real_email, 'Deposited Funds Successfully', processing[1])
-                                time.sleep(0.5)
+                            print('Deposit Funds:')
+                            pincodeauth = cust_inp('Enter your 4 digit pincode: ', 's')
+                            if pincodeauth==pincode:
+                                amount = cust_inp('Enter the amount to be deposited: ', 'f')
+                                processing = deposit_funds(real_name, real_id, amount)
                                 
-                            else:
-                                print("Ooopss.... Something went wrong..might be that you have exceeded the deposition limit.. or gave an invalid input")   
+                                if processing[0]:
+                                    print('deposited successfully')
+                                    print(processing[1])
+                                    post_email(real_email, 'Deposited Funds Successfully', processing[1])
+                                    time.sleep(0.5)
+                                    
+                                else:
+                                    print("Ooopss.... Something went wrong..might be that you have exceeded the deposition limit.. or gave an invalid input")
+                            else: print('Pincode didn\'t match.. Try again later!!')
+                            
                             func_sep()
 
 #transfer--------------------------------------------------------------------------------------------------->                                  
                         elif preference == '3':#transfer
+                            print('Transfer Funds:')
                             recievers_name = cust_inp('Enter receiver\'s username: ', 's')
                             recievers_id = cust_inp('Enter receiver\'s bank id: ', 's') 
                             checky_cursor = connect.cursor()
@@ -104,18 +133,21 @@ while True:
                             
                             if main_val:
                                 if (recievers_name, recievers_id) == main_val[0][0:2] and main_val:
-                                    amount = cust_inp('Enter the amount to be transferred: ', 'f')
-                                    x, reciept = transfer_funds(real_name, real_id, amount, recievers_name, recievers_id)
-                                    if x: 
-                                        print('Fund Transfer Successful')
-                                        void_sep()
-                                        print(reciept)
-                                        #email
-                                        post_email(real_email, 'Transferred Funds Successfully', reciept)
-                                        post_email(main_val[0][2], 'Received Funds Successfully', reciept)
-                                        time.sleep(0.5)
-                                        
-                                    else: print('Ooppss.. amount wasn\'t valid! Try again. Transcation unsuccessful!')
+                                    pincodeauth = cust_inp('Enter your 4 digit pincode: ', 's')
+                                    if pincodeauth==pincode:
+                                        amount = cust_inp('Enter the amount to be transferred: ', 'f')
+                                        x, reciept, send_ban, rec_ban = transfer_funds(real_name, real_id, amount, recievers_name, recievers_id)
+                                        if x: 
+                                            print('Fund Transfer Successful')
+                                            void_sep()
+                                            print(reciept)
+                                            #email
+                                            post_email(real_email, 'Transferred Funds Successfully', reciept+F'\ncurrent balance of your account: ${send_ban}')
+                                            post_email(main_val[0][2], 'Received Funds Successfully', reciept+F'\ncurrent balance of your account: ${rec_ban}')
+                                            time.sleep(0.5)
+                                            
+                                        else: print('Ooppss.. amount wasn\'t valid! Try again. Transcation unsuccessful!')
+                                    else: print('Pincode didn\'t match.. Try again later!!')
                                 
                                 else: print('Ooopss.. no such user was detectable.. Try again with valid info!!')
                             
@@ -125,34 +157,75 @@ while True:
                         elif preference == '4':#logout
                             print('Logging-Out...')
                             time.sleep(1)
-                            print('Logged Out Successfully')
+                            print(F'{real_name} Logged Out Successfully')
                             func_sep()
                             break
 
 #delete--------------------------------------------------------------------------------------------------->                              
                         elif preference == '5':#delete
-                            assurity = cust_inp('Are ya sure ya wanna delete this account(y/n->any character): ', 's').casefold()
-                            if assurity=='y':
-                                delete_user(real_id)
-                                print(F'{real_name}\'s account has been deleted successfully')
-                                time.sleep(1)
-                                
-                            else:
-                                print('Oh.. gr8 that ya have changed ya mind')
+                            print('Delete account:')
+                            pincodeauth = cust_inp('Enter your 4 digit pincode: ', 's')
+                            if pincodeauth == pincode:
+                                assurity = cust_inp('Are ya sure ya wanna delete this account(y/n->any character): ', 's').casefold()
+                                if assurity=='y':
+                                    delete_user(real_id)
+                                    print(F'{real_name}\'s account has been deleted successfully')
+                                    func_sep()
+                                    time.sleep(1)
+                                    break
+                                    
+                                    
+                                else:
+                                    print('Oh.. gr8 that ya have changed ya mind')
+                            else:  print('Pincode didn\'t match.. Try again later!!')
                             
                             func_sep()
 
 #display-detail-------------------------------------------------------------------------------------------->                                    
                         elif preference == '6':#display
-                            print(display_balance(real_id)[1])
-                            time.sleep(1)
+                            print('Display Details:')
+                            pincodeauth = cust_inp('Enter your 4 digit pincode: ', 's')
+                            if pincode==pincodeauth:
+                                print(display_balance(real_id)[1])
+                                time.sleep(1)
+                            else: print('Pincode didn\'t match.. Try again later!!')
                             func_sep()
                         
+#update-pin-------------------------------------------------------------------------------------------->   
+                        elif preference=='7':#upd-pin
+                            print('Update Pin-Code')
+                            pincodeauth = cust_inp('Enter your 4 digit pincode: ', 's')
+                            if pincode==pincodeauth:
+                                repin = cust_inp('Enter your new 4-digit pin: ', 's')
+                                if repin.isdigit() and len(repin)==4:
+                                    x = update_pin(real_id, repin)
+                                    if x: 
+                                        print('Pin resetted Successfully!')
+                                        print('Start from home again!! as pin has been resetted...')
+                                        func_sep()
+                                        time.sleep(1)
+                                        break
+                                        
+                                    else: print('Ooops.. Something went wrong, try again later!!')
+                                else: print('C\'mon give a valid input')
+                                time.sleep(1)
+                            else: print('Pincode didn\'t match.. Try again later!!')
+                            func_sep()
+
+#email-history------------------------------------------------------------------------------------------            
+                        elif preference == '8':#email-history
+                            print('Get your transactions history e-mailed:')
+                            pincodeauth = cust_inp('Enter your 4 digit pincode: ', 's')
+                            if pincode==pincodeauth:
+                                csv_transactions(real_id, real_id)
+                                acc_post_email(real_email, real_id)
+                                print('email-sent successfully!!!')
+                            else: print('Pincode didn\'t match.. Try again later!!')
+                            func_sep()
+                            
                         else: pass
-                        
-                    else: print('Invalid input!!')
-                        
                 
+                    else: print('Invalid input!!')
             else:
                 void_sep()
                 print("user-id, username and password didn't match!! or no such user found!!")
@@ -169,7 +242,8 @@ while True:
                     email: str,
                     date_created: str,
                     balance: float,
-                    password: str'''
+                    password: str,
+                    pincode: str'''
                     
                 print('''
 --------------------------------                      
@@ -232,12 +306,19 @@ Fill up the required details: ->
                     else: print('ensure your password has 8 characters or more!! or might be that passwords didn\'t match')                        
                 void_sep()   
                 
+                #pincode
+                while True:
+                    pincode = cust_inp('Set a 4-digit pin(for transactional purposes): ', 's')
+                    if (len(pincode)==4) and (pincode.isdigit()): break
+                    else: print('Ooops.. invalid pin try again')
+                
                 #date_created
                 date_created = str(datetime.datetime.now())
-                
                 print('balance initialized to 0.. deposit cash if wanted after logging in')
                 void_sep()
-                z = create_user(name, gender, age, nationality, unique_id, phone_no, email, date_created, balance, password)
+                
+                
+                z = create_user(name, gender, age, nationality, unique_id, phone_no, email, date_created, balance, password, pincode)
                 
                 if z: 
                     print('Account Created successfully')
