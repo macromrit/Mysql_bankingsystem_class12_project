@@ -61,7 +61,7 @@ Withdawal Reciept
 User's Name:        {vals[0]}
 User's bank id:     {vals[1]}
 Amount withdrawn:   ${vals[2]}
-Withdrawed Time:    {vals[4]}
+Withdrawal Time:    {vals[4]}
 User's balance:     ${vals[3]}
 -------------------------------------
         '''
@@ -73,7 +73,7 @@ Deposital Reciept
 User's Name:        {vals[0]}
 User's bank id:     {vals[1]}
 Amount deposited:   ${vals[2]}
-Deposited Time:     {vals[4]}
+Deposital Time:     {vals[4]}
 User's balance:     ${vals[3]}
 -------------------------------------
         '''
