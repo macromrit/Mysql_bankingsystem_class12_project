@@ -60,11 +60,18 @@ if connected:
             else: break
         
         return auth_code
+    
+    def unique_otc_email_auth():
+        psudo_code = ''
+        for i in range(4):
+            psudo_code+=str(random.randint(1,9))
+        return psudo_code
     #------------------------------------------------------------>
         
         
     if __name__ == '__main__':
         print(unique_code_gen())
+        print(unique_otc_email_auth())
 
 else:
     print('issue1: mysql connectivity error')
