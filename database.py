@@ -131,7 +131,7 @@ if connected:
             upd_balance = balance[0]-amount
             try:
                 with_cursor.execute("UPDATE account_holders SET balance = %s WHERE unique_id = %s", (upd_balance, user_id))
-                with_cursor.execute("INSERT INTO history(user_id, mode, amount, time) values(%s, %s, %s, %s)", (user_id, 'w', amount, str(datetime.datetime.now())))
+                with_cursor.execute("INSERT INTO history(user_id, mode, amount, time, sudo_balance) values(%s, %s, %s, %s, %s)", (user_id, 'w', amount, str(datetime.datetime.now()), upd_balance))
                 main_connection.commit()
                 withdrawal = True
             except:
@@ -168,7 +168,7 @@ if connected:
                 upd_balance = balance[0]+amount
                 depo_cursor.execute("UPDATE account_holders SET balance = %s WHERE unique_id=%s", (upd_balance, user_id))
 
-                depo_cursor.execute("INSERT INTO history(user_id, mode, amount, time) VALUES(%s, %s, %s, %s)", (user_id, 'd', amount, str(datetime.datetime.now())))
+                depo_cursor.execute("INSERT INTO history(user_id, mode, amount, time, sudo_balance) VALUES(%s, %s, %s, %s, %s)", (user_id, 'd', amount, str(datetime.datetime.now()), upd_balance))
                 main_connection.commit()
                 deposited=True
             except:
@@ -205,11 +205,11 @@ if connected:
                 updating_cursor = main_connection.cursor()
                 upd_senders_balance = sender_balance[0][0] - amount
                 updating_cursor.execute(F'UPDATE account_holders SET balance = {upd_senders_balance} WHERE unique_id = \'{user_id}\'')
-                updating_cursor.execute("INSERT INTO history VALUES(%s, %s, %s, %s, %s)", (user_id, 'ts', amount, recievers_id, datetime.datetime.now()))
+                updating_cursor.execute("INSERT INTO history VALUES(%s, %s, %s, %s, %s, %s)", (user_id, 'ts', amount, recievers_id, datetime.datetime.now(), upd_senders_balance))
                 #depositing cash to the receiver
                 upd_recievers_balance = reciever_balance[0][0] + amount
                 updating_cursor.execute(F'UPDATE account_holders SET balance = {upd_recievers_balance} WHERE unique_id = \'{recievers_id}\'')
-                updating_cursor.execute("INSERT INTO history VALUES(%s, %s, %s, %s, %s)", (recievers_id, 'tr', amount, None, datetime.datetime.now()))
+                updating_cursor.execute("INSERT INTO history VALUES(%s, %s, %s, %s, %s, %s)", (recievers_id, 'tr', amount, None, datetime.datetime.now(), upd_recievers_balance))
                 main_connection.commit()
                 transferred = True
             except:
@@ -246,8 +246,11 @@ if connected:
             history_cursor.execute('SELECT * FROM history WHERE user_id = %s', (user_id,))
             with open(F'user_transactions/{filename}.csv', 'w', newline='') as writting: 
                 actual = csv.writer(writting, delimiter=',')
-                actual.writerow(['your-id', 'mode-of-transaction', 'amount', 'receivers-id', 'transaction-time'])
-                for i in history_cursor: actual.writerow(list(i))
+                actual.writerow(['Your-Id', 'Debited', 'Credited', 'Balance-History', 'Transaction-Time'])
+                for i in list(history_cursor):
+                    if i[1] in ('ts', 'w'): actual.writerow([i[0], '$'+str(i[2]) , '-----', '$'+str(i[5]), i[4]])
+                    else: actual.writerow([i[0], '-----', '$'+str(i[2]), '$'+str(i[5]), i[4]])
+                    
             history_cursor.close()
             process=True
         except: pass
@@ -306,7 +309,7 @@ if connected:
                         pt.show()
                     
                     elif splitter=='u':
-                        valo = cust_inp('Enter user user\'s code: ', 's')
+                        valo = cust_inp('Enter user\'s code: ', 's')
                         new_cur = main_connection.cursor()
                         new_cur.execute(F"SELECT * FROM account_holders WHERE unique_id = '{valo}'")                    
                         vals = [x for x in new_cur.fetchall()]
