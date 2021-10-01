@@ -46,11 +46,11 @@ def email_verification(receiver_email)->str:
     email_sent = False
     try:
         history = EmailMessage()
-        history['Subject'] = 'This is your otc(one time code) verification code'
+        history['Subject'] = 'This is your one time verification code'
         history['From'] = 'Dopethon Finances'
         history['To'] = receiver_email
         otc = unique_otc_email_auth()
-        history.set_content(F'Your otc -> {otc}')
+        history.set_content(F'Your otp -> {otc}')
         
 #Connecting to server
 #------------------------------------------------------------------------------------------------------------------------->
