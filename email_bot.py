@@ -1,5 +1,6 @@
 import smtplib #->simple mail transfer protocol lib
 from email.message import EmailMessage
+from unique_code_gen import unique_otc_email_auth
 
 from matplotlib.pyplot import title
 import yagmail
@@ -40,5 +41,26 @@ def acc_post_email(reciever_email: str,
         contents='Your transactional history upto now has been written to the csv file pinged down:',
         attachments=filename
     )
+    
+def email_verification(receiver_email)->str: 
+    email_sent = False
+    try:
+        history = EmailMessage()
+        history['Subject'] = 'This is your otc(one time code) verification code'
+        history['From'] = 'Dopethon Finances'
+        history['To'] = receiver_email
+        otc = unique_otc_email_auth()
+        history.set_content(F'Your otc -> {otc}')
+        
+#Connecting to server
+#------------------------------------------------------------------------------------------------------------------------->
+        maccy_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        maccy_server.login('amritsubramanian.c@gmail.com', 'amma@@1953')#connection established
+        maccy_server.send_message(history)
+        maccy_server.quit()
+        email_sent = True
+    except:
+        pass
+    return email_sent, otc
 
 if __name__ == '__main__': pass
