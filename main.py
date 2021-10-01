@@ -63,9 +63,9 @@ welcome to home:enter ->
                     authenticated, real_name, real_id, real_email, pincode = authenticate_user(name, user_id, password)
                     if authenticated:
                         print(F'''
-    {'-'*50}
-    Logged-In as {real_name}
-    {'-'*50}''')
+{'-'*50}
+Logged-In as {real_name}
+{'-'*50}''')
                         procedural_menu = F"""
 ---------------------------------------
 hey {real_name}.. this is your dashboard-->>
