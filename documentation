@@ -35,7 +35,8 @@ Libraries and modules used:
     smtplib -> used to handle email via python [pre-installed] [fullform: simple-mail-transfer-protocol-library].
     random -> to generate unique id [pre-installed].
     email -> to make the email server linkage primitive [pre-installed].
-    yagmail -> to send email with attachments
+    yagmail -> to send email with attachments like csv
+    speedtest -> to detect whether the pgm would be able to send email or not which pseudopodiumatically relies on internet upload and download speed
 
 
 Set of Mysql commands to be executed before running the program:
